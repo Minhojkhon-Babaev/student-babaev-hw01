@@ -1,0 +1,10 @@
+# docker compose ps --all
+# дата: 2026-09-23 16:20:15Z UTC
+# хост: macOS 26.4 arm64, Docker 29.5.2 через colima (6 CPU, 12 GiB)
+
+NAME                                 IMAGE                                              COMMAND                  SERVICE      CREATED              STATUS                          PORTS
+hse-lakehouse-student-minio-1        quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z   "/usr/bin/docker-ent…"   minio        About a minute ago   Up About a minute (healthy)     127.0.0.1:9000-9001->9000-9001/tcp
+hse-lakehouse-student-minio-init-1   quay.io/minio/mc:latest                            "/bin/sh -c ' mc ali…"   minio-init   About a minute ago   Exited (0) About a minute ago   
+hse-lakehouse-student-postgres-1     postgres:16-alpine                                 "docker-entrypoint.s…"   postgres     About a minute ago   Up About a minute (healthy)     5432/tcp
+hse-lakehouse-student-spark-1        hse-lakehouse-student-spark                        "sleep infinity"         spark        About a minute ago   Up About a minute               127.0.0.1:4040->4040/tcp
+hse-lakehouse-student-trino-1        hse-lakehouse-student-trino                        "/usr/lib/trino/bin/…"   trino        About a minute ago   Up About a minute (healthy)     127.0.0.1:8088->8080/tcp

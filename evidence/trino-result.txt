@@ -1,0 +1,168 @@
+# docker compose exec -T trino trino --output-format=ALIGNED < queries.sql
+# дата запуска: 2026-09-23; хост: macOS 26.4 arm64, 36 GiB RAM; Docker 29.5.2 в colima (6 CPU, 12 GiB)
+
+  Catalog  
+-----------
+ jmx       
+ lakehouse 
+ memory    
+ system    
+ tpcds     
+ tpch      
+(6 rows)
+       Schema       
+--------------------
+ babaev             
+ dwh                
+ information_schema 
+ system             
+(4 rows)
+  Table  
+---------
+ weather 
+(1 row)
+          Column          |            Type             | Extra | Comment 
+--------------------------+-----------------------------+-------+---------
+ city_name                | varchar                     |       |         
+ country_code             | varchar                     |       |         
+ latitude                 | double                      |       |         
+ longitude                | double                      |       |         
+ elevation_m              | double                      |       |         
+ observed_at              | timestamp(6) with time zone |       |         
+ observed_date            | date                        |       |         
+ temperature_2m_c         | double                      |       |         
+ apparent_temperature_c   | double                      |       |         
+ relative_humidity_2m_pct | integer                     |       |         
+ precipitation_mm         | double                      |       |         
+ wind_speed_10m_kmh       | double                      |       |         
+ surface_pressure_hpa     | double                      |       |         
+ cloud_cover_pct          | integer                     |       |         
+ city_id                  | varchar                     |       |         
+(15 rows)
+ observations | cities |       first_observation        |        last_observation        
+--------------+--------+--------------------------------+--------------------------------
+       122976 |     14 | 2024-01-01 00:00:00.000000 UTC | 2024-12-31 23:00:00.000000 UTC 
+(1 row)
+ city_id | observed_at | duplicates 
+---------+-------------+------------
+(0 rows)
+ observations | cities | sum_temperature_c | mean_temperature_c 
+--------------+--------+-------------------+--------------------
+       122976 |     14 |     693899.000000 |           5.642556 
+(1 row)
+ city_id |          observed_at           | temperature_2m_c | relative_humidity_2m_pct | wind_speed_10m_kmh 
+---------+--------------------------------+------------------+--------------------------+--------------------
+ astana  | 2024-01-01 00:00:00.000000 UTC |             -0.8 |                       93 |               23.4 
+ astana  | 2024-01-01 01:00:00.000000 UTC |             -0.7 |                       95 |               19.9 
+ astana  | 2024-01-01 02:00:00.000000 UTC |             -0.7 |                       94 |               22.6 
+ astana  | 2024-01-01 03:00:00.000000 UTC |             -0.6 |                       94 |               23.2 
+ astana  | 2024-01-01 04:00:00.000000 UTC |             -0.2 |                       92 |               23.7 
+ astana  | 2024-01-01 05:00:00.000000 UTC |              0.4 |                       89 |               24.5 
+ astana  | 2024-01-01 06:00:00.000000 UTC |              0.7 |                       88 |               25.2 
+ astana  | 2024-01-01 07:00:00.000000 UTC |              0.6 |                       86 |               27.7 
+ astana  | 2024-01-01 08:00:00.000000 UTC |              0.1 |                       87 |               27.6 
+ astana  | 2024-01-01 09:00:00.000000 UTC |             -0.4 |                       90 |               26.3 
+(10 rows)
+     snapshot_id     |      parent_id      |        committed_at         | operation | added_records | total_records | added_data_files 
+---------------------+---------------------+-----------------------------+-----------+---------------+---------------+------------------
+ 2008951769758326670 |                NULL | 2026-09-23 23:40:32.642 UTC | overwrite | 61152         | 61152         | 6                
+ 3302718743311656748 | 2008951769758326670 | 2026-09-23 23:40:33.283 UTC | append    | 61824         | 122976        | 6                
+(2 rows)
+        partition        | record_count | file_count 
+-------------------------+--------------+------------
+ {observed_at_month=648} |        10416 |          1 
+ {observed_at_month=649} |         9744 |          1 
+ {observed_at_month=650} |        10416 |          1 
+ {observed_at_month=651} |        10080 |          1 
+ {observed_at_month=652} |        10416 |          1 
+ {observed_at_month=653} |        10080 |          1 
+ {observed_at_month=654} |        10416 |          1 
+ {observed_at_month=655} |        10416 |          1 
+ {observed_at_month=656} |        10080 |          1 
+ {observed_at_month=657} |        10416 |          1 
+ {observed_at_month=658} |        10080 |          1 
+ {observed_at_month=659} |        10416 |          1 
+(12 rows)
+     city_id      | season | daily_amplitude_c | coldest_hour_mean_c | warmest_hour_mean_c | coldest_hour_utc | warmest_hour_utc 
+------------------+--------+-------------------+---------------------+---------------------+------------------+------------------
+ rostov_on_don    | summer |             11.02 |               19.88 |                30.9 |                2 |               11 
+ yakutsk          | summer |             10.26 |                12.7 |               22.96 |               19 |                6 
+ moscow           | summer |              9.69 |               14.86 |               24.55 |                1 |               13 
+ krasnoyarsk      | summer |              9.39 |               15.34 |               24.73 |               22 |                9 
+ astana           | summer |              9.14 |               15.05 |               24.19 |               23 |                9 
+ nizhny_novgorod  | summer |              8.71 |               15.11 |               23.81 |                1 |               13 
+ minsk            | summer |              8.49 |                15.3 |               23.79 |                2 |               13 
+ murmansk         | summer |              8.01 |               11.03 |               19.04 |                1 |               12 
+ novosibirsk      | summer |              7.98 |               15.71 |               23.69 |               22 |                8 
+ yekaterinburg    | summer |              7.97 |               13.17 |               21.15 |                0 |               10 
+ kazan            | summer |              7.84 |                15.9 |               23.74 |                1 |               11 
+ sochi            | summer |               7.1 |               20.63 |               27.73 |                2 |               11 
+ saint_petersburg | summer |              6.89 |               14.54 |               21.43 |                1 |               12 
+ vladivostok      | summer |              3.55 |               18.22 |               21.77 |               20 |                5 
+ sochi            | winter |              4.79 |                6.06 |               10.85 |                0 |               10 
+ vladivostok      | winter |              4.43 |               -8.77 |               -4.35 |               23 |                6 
+ krasnoyarsk      | winter |              4.24 |              -15.67 |              -11.44 |                1 |                8 
+ yakutsk          | winter |              4.12 |              -35.74 |              -31.62 |               23 |                5 
+ astana           | winter |              3.73 |              -13.32 |               -9.59 |                3 |               10 
+ novosibirsk      | winter |              3.62 |              -15.17 |              -11.54 |                2 |                9 
+ rostov_on_don    | winter |              3.62 |               -1.23 |                 2.4 |                4 |               11 
+ yekaterinburg    | winter |              2.94 |              -12.76 |               -9.82 |                3 |               10 
+ nizhny_novgorod  | winter |              2.44 |               -9.83 |               -7.39 |                5 |               12 
+ minsk            | winter |              1.94 |               -2.28 |               -0.34 |                6 |               12 
+ moscow           | winter |              1.88 |               -7.84 |               -5.95 |                4 |               12 
+ kazan            | winter |              1.61 |              -10.66 |               -9.05 |                5 |               11 
+ saint_petersburg | winter |               1.5 |               -5.97 |               -4.48 |                6 |               12 
+ murmansk         | winter |              0.58 |              -10.39 |               -9.81 |               16 |               11 
+(28 rows)
+DROP TABLE
+CREATE TABLE: 12 rows
+     city_id      |  city_name_ru   | federal_district | utc_offset_hours 
+------------------+-----------------+------------------+------------------
+ vladivostok      | Владивосток     | Дальневосточный  |               10 
+ yakutsk          | Якутск          | Дальневосточный  |                9 
+ kazan            | Казань          | Приволжский      |                3 
+ nizhny_novgorod  | Нижний Новгород | Приволжский      |                3 
+ murmansk         | Мурманск        | Северо-Западный  |                3 
+ saint_petersburg | Санкт-Петербург | Северо-Западный  |                3 
+ krasnoyarsk      | Красноярск      | Сибирский        |                7 
+ novosibirsk      | Новосибирск     | Сибирский        |                7 
+ yekaterinburg    | Екатеринбург    | Уральский        |                5 
+ moscow           | Москва          | Центральный      |                3 
+ rostov_on_don    | Ростов-на-Дону  | Южный            |                3 
+ sochi            | Сочи            | Южный            |                3 
+(12 rows)
+ city_id | key_count 
+---------+-----------
+(0 rows)
+ federal_district | cities | observations | mean_temperature_c | min_temperature_c | max_temperature_c 
+------------------+--------+--------------+--------------------+-------------------+-------------------
+ Северо-Западный  |      2 |        17568 |           4.400000 |             -30.5 |              31.9 
+ Южный            |      2 |        17568 |          14.160000 |             -19.4 |              38.5 
+ Дальневосточный  |      2 |        17568 |           0.260000 |             -53.5 |              32.4 
+ Сибирский        |      2 |        17568 |           3.110000 |             -36.9 |              34.1 
+ Приволжский      |      2 |        17568 |           5.910000 |             -30.2 |              33.1 
+ Не сопоставлен   |      2 |        17568 |           6.600000 |             -34.2 |              34.9 
+ Уральский        |      1 |         8784 |           3.140000 |             -33.7 |              31.9 
+ Центральный      |      1 |         8784 |           6.960000 |             -31.0 |              32.9 
+(8 rows)
+ before_join | after_join | unmatched_observations | unmatched_cities 
+-------------+------------+------------------------+------------------
+      122976 |     122976 |                  17568 |                2 
+(1 row)
+ federal_district | season | cities | mean_daily_amplitude_c | min_city_amplitude_c | max_city_amplitude_c | coldest_hours_local | warmest_hours_local 
+------------------+--------+--------+------------------------+----------------------+----------------------+---------------------+---------------------
+ Центральный      | summer |      1 |                   9.69 |                 9.69 |                 9.69 | 4                   | 16                  
+ Южный            | summer |      2 |                   9.06 |                  7.1 |                11.02 | 5                   | 14                  
+ Сибирский        | summer |      2 |                   8.68 |                 7.98 |                 9.39 | 5                   | 15,16               
+ Приволжский      | summer |      2 |                   8.27 |                 7.84 |                 8.71 | 4                   | 14,16               
+ Уральский        | summer |      1 |                   7.97 |                 7.97 |                 7.97 | 5                   | 15                  
+ Северо-Западный  | summer |      2 |                   7.45 |                 6.89 |                 8.01 | 4                   | 15                  
+ Дальневосточный  | summer |      2 |                   6.91 |                 3.55 |                10.26 | 4,6                 | 15                  
+ Дальневосточный  | winter |      2 |                   4.28 |                 4.12 |                 4.43 | 8,9                 | 14,16               
+ Южный            | winter |      2 |                    4.2 |                 3.62 |                 4.79 | 3,7                 | 13,14               
+ Сибирский        | winter |      2 |                   3.93 |                 3.62 |                 4.24 | 8,9                 | 15,16               
+ Уральский        | winter |      1 |                   2.94 |                 2.94 |                 2.94 | 8                   | 15                  
+ Приволжский      | winter |      2 |                   2.02 |                 1.61 |                 2.44 | 8                   | 14,15               
+ Центральный      | winter |      1 |                   1.88 |                 1.88 |                 1.88 | 7                   | 15                  
+ Северо-Западный  | winter |      2 |                   1.04 |                 0.58 |                  1.5 | 19,9                | 14,15               
+(14 rows)

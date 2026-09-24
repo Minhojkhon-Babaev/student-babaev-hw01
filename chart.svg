@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="702" viewBox="0 0 1000 702" font-family="Helvetica, Arial, sans-serif">
+<rect width="1000" height="702" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="600" fill="#1d1d1f">Суточный ход температуры по городам: лето против зимы</text>
+<text x="24" y="56" font-size="12" fill="#6b6b70">Разница между самым тёплым и самым холодным часом средних суток. Open-Meteo ERA5, 2024 год, часы местного времени</text>
+<rect x="24" y="68" width="12" height="12" fill="#e2673a"/>
+<text x="42" y="78" font-size="12" fill="#1d1d1f">лето (июнь–август)</text>
+<rect x="184" y="68" width="12" height="12" fill="#3a6ee2"/>
+<text x="202" y="78" font-size="12" fill="#1d1d1f">зима (декабрь–февраль)</text>
+<line x1="170.0" y1="96" x2="170.0" y2="572" stroke="#e6e6ea" stroke-width="1"/>
+<text x="170.0" y="590" font-size="11" fill="#6b6b70" text-anchor="middle">0</text>
+<line x1="293.3" y1="96" x2="293.3" y2="572" stroke="#e6e6ea" stroke-width="1"/>
+<text x="293.3" y="590" font-size="11" fill="#6b6b70" text-anchor="middle">2</text>
+<line x1="416.7" y1="96" x2="416.7" y2="572" stroke="#e6e6ea" stroke-width="1"/>
+<text x="416.7" y="590" font-size="11" fill="#6b6b70" text-anchor="middle">4</text>
+<line x1="540.0" y1="96" x2="540.0" y2="572" stroke="#e6e6ea" stroke-width="1"/>
+<text x="540.0" y="590" font-size="11" fill="#6b6b70" text-anchor="middle">6</text>
+<line x1="663.3" y1="96" x2="663.3" y2="572" stroke="#e6e6ea" stroke-width="1"/>
+<text x="663.3" y="590" font-size="11" fill="#6b6b70" text-anchor="middle">8</text>
+<line x1="786.7" y1="96" x2="786.7" y2="572" stroke="#e6e6ea" stroke-width="1"/>
+<text x="786.7" y="590" font-size="11" fill="#6b6b70" text-anchor="middle">10</text>
+<line x1="910.0" y1="96" x2="910.0" y2="572" stroke="#e6e6ea" stroke-width="1"/>
+<text x="910.0" y="590" font-size="11" fill="#6b6b70" text-anchor="middle">12</text>
+<text x="540.0" y="610" font-size="12" fill="#6b6b70" text-anchor="middle">амплитуда, °C</text>
+<text x="158" y="117" font-size="12" fill="#1d1d1f" text-anchor="end">Ростов-на-Дону</text>
+<rect x="170" y="100" width="679.6" height="10" rx="2" fill="#e2673a"/>
+<text x="855.6" y="109" font-size="10.5" fill="#4a4a4f">11.02</text>
+<rect x="170" y="112" width="223.2" height="10" rx="2" fill="#3a6ee2"/>
+<text x="399.2" y="121" font-size="10.5" fill="#4a4a4f">3.62</text>
+<text x="158" y="151" font-size="12" fill="#1d1d1f" text-anchor="end">Якутск</text>
+<rect x="170" y="134" width="632.7" height="10" rx="2" fill="#e2673a"/>
+<text x="808.7" y="143" font-size="10.5" fill="#4a4a4f">10.26</text>
+<rect x="170" y="146" width="254.1" height="10" rx="2" fill="#3a6ee2"/>
+<text x="430.1" y="155" font-size="10.5" fill="#4a4a4f">4.12</text>
+<text x="158" y="185" font-size="12" fill="#1d1d1f" text-anchor="end">Москва</text>
+<rect x="170" y="168" width="597.5" height="10" rx="2" fill="#e2673a"/>
+<text x="773.5" y="177" font-size="10.5" fill="#4a4a4f">9.69</text>
+<rect x="170" y="180" width="115.9" height="10" rx="2" fill="#3a6ee2"/>
+<text x="291.9" y="189" font-size="10.5" fill="#4a4a4f">1.88</text>
+<text x="158" y="219" font-size="12" fill="#1d1d1f" text-anchor="end">Красноярск</text>
+<rect x="170" y="202" width="579.1" height="10" rx="2" fill="#e2673a"/>
+<text x="755.1" y="211" font-size="10.5" fill="#4a4a4f">9.39</text>
+<rect x="170" y="214" width="261.5" height="10" rx="2" fill="#3a6ee2"/>
+<text x="437.5" y="223" font-size="10.5" fill="#4a4a4f">4.24</text>
+<text x="158" y="253" font-size="12" fill="#1d1d1f" text-anchor="end">Астана</text>
+<rect x="170" y="236" width="563.6" height="10" rx="2" fill="#e2673a"/>
+<text x="739.6" y="245" font-size="10.5" fill="#4a4a4f">9.14</text>
+<rect x="170" y="248" width="230.0" height="10" rx="2" fill="#3a6ee2"/>
+<text x="406.0" y="257" font-size="10.5" fill="#4a4a4f">3.73</text>
+<text x="158" y="287" font-size="12" fill="#1d1d1f" text-anchor="end">Нижний Новгород</text>
+<rect x="170" y="270" width="537.1" height="10" rx="2" fill="#e2673a"/>
+<text x="713.1" y="279" font-size="10.5" fill="#4a4a4f">8.71</text>
+<rect x="170" y="282" width="150.5" height="10" rx="2" fill="#3a6ee2"/>
+<text x="326.5" y="291" font-size="10.5" fill="#4a4a4f">2.44</text>
+<text x="158" y="321" font-size="12" fill="#1d1d1f" text-anchor="end">Минск</text>
+<rect x="170" y="304" width="523.5" height="10" rx="2" fill="#e2673a"/>
+<text x="699.5" y="313" font-size="10.5" fill="#4a4a4f">8.49</text>
+<rect x="170" y="316" width="119.6" height="10" rx="2" fill="#3a6ee2"/>
+<text x="295.6" y="325" font-size="10.5" fill="#4a4a4f">1.94</text>
+<text x="158" y="355" font-size="12" fill="#1d1d1f" text-anchor="end">Мурманск</text>
+<rect x="170" y="338" width="493.9" height="10" rx="2" fill="#e2673a"/>
+<text x="670.0" y="347" font-size="10.5" fill="#4a4a4f">8.01</text>
+<rect x="170" y="350" width="35.8" height="10" rx="2" fill="#3a6ee2"/>
+<text x="211.8" y="359" font-size="10.5" fill="#4a4a4f">0.58</text>
+<text x="158" y="389" font-size="12" fill="#1d1d1f" text-anchor="end">Новосибирск</text>
+<rect x="170" y="372" width="492.1" height="10" rx="2" fill="#e2673a"/>
+<text x="668.1" y="381" font-size="10.5" fill="#4a4a4f">7.98</text>
+<rect x="170" y="384" width="223.2" height="10" rx="2" fill="#3a6ee2"/>
+<text x="399.2" y="393" font-size="10.5" fill="#4a4a4f">3.62</text>
+<text x="158" y="423" font-size="12" fill="#1d1d1f" text-anchor="end">Екатеринбург</text>
+<rect x="170" y="406" width="491.5" height="10" rx="2" fill="#e2673a"/>
+<text x="667.5" y="415" font-size="10.5" fill="#4a4a4f">7.97</text>
+<rect x="170" y="418" width="181.3" height="10" rx="2" fill="#3a6ee2"/>
+<text x="357.3" y="427" font-size="10.5" fill="#4a4a4f">2.94</text>
+<text x="158" y="457" font-size="12" fill="#1d1d1f" text-anchor="end">Казань</text>
+<rect x="170" y="440" width="483.5" height="10" rx="2" fill="#e2673a"/>
+<text x="659.5" y="449" font-size="10.5" fill="#4a4a4f">7.84</text>
+<rect x="170" y="452" width="99.3" height="10" rx="2" fill="#3a6ee2"/>
+<text x="275.3" y="461" font-size="10.5" fill="#4a4a4f">1.61</text>
+<text x="158" y="491" font-size="12" fill="#1d1d1f" text-anchor="end">Сочи</text>
+<rect x="170" y="474" width="437.8" height="10" rx="2" fill="#e2673a"/>
+<text x="613.8" y="483" font-size="10.5" fill="#4a4a4f">7.10</text>
+<rect x="170" y="486" width="295.4" height="10" rx="2" fill="#3a6ee2"/>
+<text x="471.4" y="495" font-size="10.5" fill="#4a4a4f">4.79</text>
+<text x="158" y="525" font-size="12" fill="#1d1d1f" text-anchor="end">Санкт-Петербург</text>
+<rect x="170" y="508" width="424.9" height="10" rx="2" fill="#e2673a"/>
+<text x="600.9" y="517" font-size="10.5" fill="#4a4a4f">6.89</text>
+<rect x="170" y="520" width="92.5" height="10" rx="2" fill="#3a6ee2"/>
+<text x="268.5" y="529" font-size="10.5" fill="#4a4a4f">1.50</text>
+<text x="158" y="559" font-size="12" fill="#1d1d1f" text-anchor="end">Владивосток</text>
+<rect x="170" y="542" width="218.9" height="10" rx="2" fill="#e2673a"/>
+<text x="394.9" y="551" font-size="10.5" fill="#4a4a4f">3.55</text>
+<rect x="170" y="554" width="273.2" height="10" rx="2" fill="#3a6ee2"/>
+<text x="449.2" y="563" font-size="10.5" fill="#4a4a4f">4.43</text>
+<text x="24" y="634" font-size="12" fill="#1d1d1f">Вывод: летняя амплитуда в 2–5 раз больше зимней, и её размер задаёт не широта, а континентальность — приморские</text>
+<text x="24" y="651" font-size="12" fill="#1d1d1f">Владивосток и Сочи ровнее степного Ростова-на-Дону и резко континентального Якутска; в Мурманске зимой суточного хода</text>
+<text x="24" y="668" font-size="12" fill="#1d1d1f">почти нет: полярная ночь.</text>
+</svg>

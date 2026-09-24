@@ -1,0 +1,36 @@
+# Raw-объекты в MinIO: s3://raw/babaev/weather/ingestion_date=2026-09-23/
+# Команда получения данных (на хосте, из infra/):
+#   python3 scripts/hw01/fetch_source.py
+# Пример HTTP-запроса, который делает скрипт для одного города:
+#   curl 'https://archive-api.open-meteo.com/v1/archive?latitude=55.7558&longitude=37.6173&start_date=2024-01-01&end_date=2024-12-31&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,wind_speed_10m,surface_pressure,cloud_cover&timezone=UTC'
+# Команда загрузки в MinIO (из infra/):
+#   docker compose exec -T spark python3 /scripts/hw01/upload_raw.py
+# хост: macOS 26.4 arm64, 36 GiB RAM; Docker 29.5.2 в colima (6 CPU, 12 GiB)
+
+== Загружаем 16 объектов в s3://raw/babaev/weather/ingestion_date=2026-09-23/ ==
+
+== Листинг после загрузки ==
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source.csv	  14,541,023 байт	2026-09-23 23:42:01+0000
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source_json/astana.json	     447,871 байт	2026-09-23 23:42:01+0000
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source_json/kazan.json	     453,813 байт	2026-09-23 23:42:01+0000
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source_json/krasnoyarsk.json	     450,455 байт	2026-09-23 23:42:01+0000
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source_json/minsk.json	     445,475 байт	2026-09-23 23:42:01+0000
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source_json/moscow.json	     449,870 байт	2026-09-23 23:42:01+0000
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source_json/murmansk.json	     454,638 байт	2026-09-23 23:42:01+0000
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source_json/nizhny_novgorod.json	     450,360 байт	2026-09-23 23:42:01+0000
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source_json/novosibirsk.json	     453,333 байт	2026-09-23 23:42:01+0000
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source_json/rostov_on_don.json	     450,025 байт	2026-09-23 23:42:01+0000
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source_json/saint_petersburg.json	     451,972 байт	2026-09-23 23:42:01+0000
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source_json/sochi.json	     446,084 байт	2026-09-23 23:42:01+0000
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source_json/vladivostok.json	     452,901 байт	2026-09-23 23:42:01+0000
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source_json/yakutsk.json	     454,910 байт	2026-09-23 23:42:01+0000
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source_json/yekaterinburg.json	     448,750 байт	2026-09-23 23:42:01+0000
+  s3://raw/babaev/weather/ingestion_date=2026-09-23/source_manifest.json	       9,204 байт	2026-09-23 23:42:01+0000
+
+Всего объектов под префиксом: 16; суммарный размер: 19.89 МиБ
+
+== Сверка: локальный sha256 = ETag загруженного объекта (одночастная загрузка) ==
+  babaev/weather/ingestion_date=2026-09-23/source_manifest.json: размер локально 9,204, в S3 9,204; sha256 локального файла c64abb004afa3e98…
+  babaev/weather/ingestion_date=2026-09-23/source.csv: размер локально 14,541,023, в S3 14,541,023; sha256 локального файла b136561424122982…
+  babaev/weather/ingestion_date=2026-09-23/source_json/moscow.json: размер локально 449,870, в S3 449,870; sha256 локального файла a9c6bde1782752db…
+Raw сохранён без ручных правок: файлы загружены как есть, дальнейшие преобразования происходят только в pipeline.py

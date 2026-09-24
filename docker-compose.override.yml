@@ -1,0 +1,16 @@
+# Локальная поправка к комплекту преподавателя: образы MinIO берём с quay.io.
+#
+# Причина: Docker Hub на момент выполнения ДЗ отдаёт на minio/minio и minio/mc
+#   "pull access denied ... repository does not exist or may require 'docker login'".
+#   quay.io/minio — официальный реестр MinIO, версия и digest зафиксированы.
+#
+# Файл additive: docker-compose.yml из комплекта не меняется, Compose сам
+# подхватывает docker-compose.override.yml из текущего каталога.
+# Если на вашей машине Docker Hub отдаёт minio/minio, этот файл не нужен.
+
+services:
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+
+  minio-init:
+    image: quay.io/minio/mc:latest

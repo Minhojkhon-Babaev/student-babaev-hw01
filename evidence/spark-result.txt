@@ -1,0 +1,204 @@
+# docker compose exec -T spark spark-submit /scripts/hw01/pipeline.py
+# дата запуска: 2026-09-23; хост: macOS 26.4 arm64, 36 GiB RAM; Docker 29.5.2 в colima (6 CPU, 12 GiB)
+# служебные строки логов Spark (WARN/INFO) убраны, содержательный вывод не менялся
+
+== Raw: s3a://raw/babaev/weather/ingestion_date=2026-09-23/source.csv ==
+root
+ |-- city_id: string (nullable = true)
+ |-- city_name: string (nullable = true)
+ |-- country_code: string (nullable = true)
+ |-- latitude: double (nullable = true)
+ |-- longitude: double (nullable = true)
+ |-- elevation_m: double (nullable = true)
+ |-- observed_at: timestamp (nullable = true)
+ |-- observed_date: date (nullable = true)
+ |-- temperature_2m_c: double (nullable = true)
+ |-- apparent_temperature_c: double (nullable = true)
+ |-- relative_humidity_2m_pct: integer (nullable = true)
+ |-- precipitation_mm: double (nullable = true)
+ |-- wind_speed_10m_kmh: double (nullable = true)
+ |-- surface_pressure_hpa: double (nullable = true)
+ |-- cloud_cover_pct: integer (nullable = true)
+ |-- _corrupt_record: string (nullable = true)
+
+
+== Проверки качества ==
+Строк в raw CSV: 122,976
+Обязательные колонки на месте: 15 полей
+Временной столбец observed_at разобран у 122,976 строк (0 не разобрано)
+
+-- Доля NULL по колонкам исходного CSV --
+  city_id                    NULL:        0  (0.0000 %)
+  city_name                  NULL:        0  (0.0000 %)
+  country_code               NULL:        0  (0.0000 %)
+  latitude                   NULL:        0  (0.0000 %)
+  longitude                  NULL:        0  (0.0000 %)
+  elevation_m                NULL:        0  (0.0000 %)
+  observed_at                NULL:        0  (0.0000 %)
+  observed_date              NULL:        0  (0.0000 %)
+  temperature_2m_c           NULL:        0  (0.0000 %)
+  apparent_temperature_c     NULL:        0  (0.0000 %)
+  relative_humidity_2m_pct   NULL:        0  (0.0000 %)
+  precipitation_mm           NULL:        0  (0.0000 %)
+  wind_speed_10m_kmh         NULL:        0  (0.0000 %)
+  surface_pressure_hpa       NULL:        0  (0.0000 %)
+  cloud_cover_pct            NULL:        0  (0.0000 %)
+Ключевое поле temperature_2m_c: доля NULL 0.0000 %
+
+-- Сверка raw = accepted + rejected --
+  raw:      122,976
+  accepted: 122,976
+  rejected: 0
+  сходится
+Отклонённых строк нет: проверка воспроизводима и вернула нулевой результат
+
+Дубли по ключу ['city_id', 'observed_at']: 0
+
+-- Отклонённые строки -> s3a://datalake/babaev/weather/rejects (с колонкой reject_reason) --
+Записано отклонённых строк: 0
++----------------+---------------+------------+------------+-------------------+-------------------+----------+----------+
+|city_id         |city_name      |country_code|observations|first_observation  |last_observation   |min_temp_c|max_temp_c|
++----------------+---------------+------------+------------+-------------------+-------------------+----------+----------+
+|astana          |Астана         |KZ          |8784        |2024-01-01 00:00:00|2024-12-31 23:00:00|-34.2     |34.9      |
+|kazan           |Казань         |RU          |8784        |2024-01-01 00:00:00|2024-12-31 23:00:00|-30.2     |33.1      |
+|krasnoyarsk     |Красноярск     |RU          |8784        |2024-01-01 00:00:00|2024-12-31 23:00:00|-31.4     |34.1      |
+|minsk           |Минск          |BY          |8784        |2024-01-01 00:00:00|2024-12-31 23:00:00|-18.6     |33.8      |
+|moscow          |Москва         |RU          |8784        |2024-01-01 00:00:00|2024-12-31 23:00:00|-31.0     |32.9      |
+|murmansk        |Мурманск       |RU          |8784        |2024-01-01 00:00:00|2024-12-31 23:00:00|-30.5     |28.8      |
+|nizhny_novgorod |Нижний Новгород|RU          |8784        |2024-01-01 00:00:00|2024-12-31 23:00:00|-29.5     |32.8      |
+|novosibirsk     |Новосибирск    |RU          |8784        |2024-01-01 00:00:00|2024-12-31 23:00:00|-36.9     |33.3      |
+|rostov_on_don   |Ростов-на-Дону |RU          |8784        |2024-01-01 00:00:00|2024-12-31 23:00:00|-19.4     |38.5      |
+|saint_petersburg|Санкт-Петербург|RU          |8784        |2024-01-01 00:00:00|2024-12-31 23:00:00|-29.1     |31.9      |
+|sochi           |Сочи           |RU          |8784        |2024-01-01 00:00:00|2024-12-31 23:00:00|-4.8      |33.1      |
+|vladivostok     |Владивосток    |RU          |8784        |2024-01-01 00:00:00|2024-12-31 23:00:00|-17.6     |29.7      |
+|yakutsk         |Якутск         |RU          |8784        |2024-01-01 00:00:00|2024-12-31 23:00:00|-53.5     |32.4      |
+|yekaterinburg   |Екатеринбург   |RU          |8784        |2024-01-01 00:00:00|2024-12-31 23:00:00|-33.7     |31.9      |
++----------------+---------------+------------+------------+-------------------+-------------------+----------+----------+
+
+
+== Запись принятых строк в двух форматах ==
+CSV  -> s3a://datalake/babaev/weather/csv_accepted (без сжатия, с заголовком)
+Parquet -> s3a://datalake/babaev/weather/parquet (snappy, партиции по city_id)
+Имена и типы всех 15 полей совпадают в обоих форматах
+Строк: accepted 122,976; CSV 122,976; Parquet 122,976
+
+-- Размеры --
+  raw source.csv (как получен):      13.87 МиБ
+  CSV принятых строк:                14.05 МиБ
+  Parquet принятых строк (snappy):   1.68 МиБ
+  Отношение CSV/Parquet:             8.36
+
+== Один и тот же аналитический запрос на обоих форматах ==
+
+    SELECT city_id,
+           hour(observed_at) AS hour_utc,
+           round(avg(temperature_2m_c), 3) AS mean_temperature_c,
+           count(*) AS observations
+    FROM <формат>
+    WHERE observed_at >= TIMESTAMP '2024-06-01 00:00:00'
+      AND observed_at <  TIMESTAMP '2024-09-01 00:00:00'
+    GROUP BY city_id, hour(observed_at)
+    ORDER BY city_id, hour_utc
+
+Схема задана до таймера; замеряем выполнение запроса с материализацией результата, а не создание ленивого DataFrame.
+Кэш Spark для этих таблиц не прогревался (.cache() не вызывался), но файлы уже прошли через страничный кэш ОС при записи — это не холодный старт.
+  CSV      первый замер  0.393 с; строк в ответе: 336
+  PARQUET  первый замер  0.213 с; строк в ответе: 336
+  PARQUET  повтор 2      0.195 с; строк в ответе: 336
+  CSV      повтор 2      0.146 с; строк в ответе: 336
+  CSV      повтор 3      0.142 с; строк в ответе: 336
+  PARQUET  повтор 3      0.134 с; строк в ответе: 336
+Результаты запроса совпали во всех замерах для обоих форматов.
+  CSV      первый 0.393 с; повторы 0.146, 0.142 с
+  PARQUET  первый 0.213 с; повторы 0.195, 0.134 с
+Время зависит от прогрева, числа файлов и ресурсов ноутбука; ускорение не гарантировано и не требуется по условию.
+
+== Iceberg: lakehouse.babaev.weather ==
+Порция 1 (observed_at < 2024-07-01): 61,152 строк
+Порция 2 (observed_at >= 2024-07-01): 61,824 строк
+Порции не пересекаются по времени и в сумме дают весь принятый набор
+
+-- Запись 1: CREATE OR REPLACE TABLE ... AS SELECT первой порции --
+Строк в таблице: 61,152; новые snapshots: [2008951769758326670]
+
+-- Запись 2: INSERT INTO второй, непересекающейся порции --
+Строк в таблице: 122,976; уникальных ключей: 122,976; новые snapshots: [3302718743311656748]
+Обе записи добавили данные: строки Parquet перенесены без дублей и потерь
+
+-- История snapshots (metadata table) --
++-------------------+-----------------------+---------+-------------+-------------+-----------+
+|snapshot_id        |committed_at           |operation|added_records|total_records|added_files|
++-------------------+-----------------------+---------+-------------+-------------+-----------+
+|2008951769758326670|2026-09-23 23:40:32.642|overwrite|61152        |61152        |6          |
+|3302718743311656748|2026-09-23 23:40:33.283|append   |61824        |122976       |6          |
++-------------------+-----------------------+---------+-------------+-------------+-----------+
+
+-- Схема таблицы из метаданных Iceberg --
++------------------------+-------------------+-------+
+|col_name                |data_type          |comment|
++------------------------+-------------------+-------+
+|city_name               |string             |NULL   |
+|country_code            |string             |NULL   |
+|latitude                |double             |NULL   |
+|longitude               |double             |NULL   |
+|elevation_m             |double             |NULL   |
+|observed_at             |timestamp          |NULL   |
+|observed_date           |date               |NULL   |
+|temperature_2m_c        |double             |NULL   |
+|apparent_temperature_c  |double             |NULL   |
+|relative_humidity_2m_pct|int                |NULL   |
+|precipitation_mm        |double             |NULL   |
+|wind_speed_10m_kmh      |double             |NULL   |
+|surface_pressure_hpa    |double             |NULL   |
+|cloud_cover_pct         |int                |NULL   |
+|city_id                 |string             |NULL   |
+|                        |                   |       |
+|# Partitioning          |                   |       |
+|Part 0                  |months(observed_at)|       |
++------------------------+-------------------+-------+
+
+
+== Ответ на исследовательский вопрос средствами Spark ==
+Суточный ход температуры: средняя по часам UTC, зима (DJF) против лета (JJA)
++----------------+------+-------------------+-------------------+-----------------+----------------+----------------+
+|city_id         |season|coldest_hour_mean_c|warmest_hour_mean_c|daily_amplitude_c|coldest_hour_utc|warmest_hour_utc|
++----------------+------+-------------------+-------------------+-----------------+----------------+----------------+
+|rostov_on_don   |summer|19.88              |30.9               |11.02            |2               |11              |
+|yakutsk         |summer|12.7               |22.96              |10.26            |19              |6               |
+|moscow          |summer|14.86              |24.55              |9.69             |1               |13              |
+|krasnoyarsk     |summer|15.34              |24.73              |9.39             |22              |9               |
+|astana          |summer|15.05              |24.19              |9.14             |23              |9               |
+|nizhny_novgorod |summer|15.11              |23.81              |8.71             |1               |13              |
+|minsk           |summer|15.3               |23.79              |8.49             |2               |13              |
+|murmansk        |summer|11.03              |19.04              |8.01             |1               |12              |
+|novosibirsk     |summer|15.71              |23.69              |7.98             |22              |8               |
+|yekaterinburg   |summer|13.17              |21.15              |7.97             |0               |10              |
+|kazan           |summer|15.9               |23.74              |7.84             |1               |11              |
+|sochi           |summer|20.63              |27.73              |7.1              |2               |11              |
+|saint_petersburg|summer|14.54              |21.43              |6.89             |1               |12              |
+|vladivostok     |summer|18.22              |21.77              |3.55             |20              |5               |
+|sochi           |winter|6.06               |10.85              |4.79             |0               |10              |
+|vladivostok     |winter|-8.77              |-4.35              |4.43             |23              |6               |
+|krasnoyarsk     |winter|-15.67             |-11.44             |4.24             |1               |8               |
+|yakutsk         |winter|-35.74             |-31.62             |4.12             |23              |5               |
+|astana          |winter|-13.32             |-9.59              |3.73             |3               |10              |
+|novosibirsk     |winter|-15.17             |-11.54             |3.62             |2               |9               |
+|rostov_on_don   |winter|-1.23              |2.4                |3.62             |4               |11              |
+|yekaterinburg   |winter|-12.76             |-9.82              |2.94             |3               |10              |
+|nizhny_novgorod |winter|-9.83              |-7.39              |2.44             |5               |12              |
+|minsk           |winter|-2.28              |-0.34              |1.94             |6               |12              |
+|moscow          |winter|-7.84              |-5.95              |1.88             |4               |12              |
+|kazan           |winter|-10.66             |-9.05              |1.61             |5               |11              |
+|saint_petersburg|winter|-5.97              |-4.48              |1.5              |6               |12              |
+|murmansk        |winter|-10.39             |-9.81              |0.58             |16              |11              |
++----------------+------+-------------------+-------------------+-----------------+----------------+----------------+
+
+-- Контрольный агрегат для сверки со Trino (тот же запрос выполняется в queries.sql) --
++------------+------+-----------------+------------------+
+|observations|cities|sum_temperature_c|mean_temperature_c|
++------------+------+-----------------+------------------+
+|122976      |14    |693899.000000    |5.642556          |
++------------+------+-----------------+------------------+
+
+
+Готово: raw -> проверки -> Parquet -> Iceberg выполнены полностью
