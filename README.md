@@ -1,111 +1,50 @@
-# student-babaev-hw01 — почасовой архив погоды Open-Meteo в Lakehouse
+# ДЗ 1. Open-Meteo → Iceberg
 
-Открытая выгрузка Open-Meteo (реанализ ERA5) за 2024 год по 14 городам превращается в
-таблицу Iceberg `lakehouse.babaev.weather`, которую одинаково читают Spark и Trino:
-**источник → raw object → Parquet → Iceberg snapshot → SQL → вывод**.
+Почасовая погода за 2024 год, 14 городов, 122 976 строк. Таблица — `lakehouse.babaev.weather`.
 
-Исследовательский вопрос: как различается суточный ход температуры (разница между самым
-тёплым и самым холодным часом средних суток) между городами и федеральными округами и
-как он меняется от зимы к лету. Ответ и все измерения — в [report.md](report.md).
+Вопрос: как отличается суточный ход температуры (разница между самым тёплым и самым холодным часом) между городами и округами зимой и летом. Ответ и цифры — в `report.md`.
 
-## Состав сдачи
+## Запуск
 
-| Файл | Что внутри |
-|---|---|
-| `report.md` | паспорт источника, проверки, таблицы измерений, snapshots, федерация, архитектурный вывод |
-| `schema.md` | поля, типы, смысл, nullable, партиционирование |
-| `fetch_source.py` | запрос к API, оригиналы JSON и отдельный шаг JSON → CSV (только stdlib) |
-| `upload_raw.py` | загрузка неизменённого raw в бакет `raw` MinIO |
-| `pipeline.py` | raw → проверки качества → Parquet с измерениями → Iceberg в две записи |
-| `queries.sql` | проверочные, аналитический и федеративный SQL для Trino |
-| `docker-compose.override.yml` | поправка образов MinIO (см. «Если что-то не запустилось») |
-| `make_chart.py`, `chart.svg` | необязательное дополнение: один график по результату SQL |
-| `evidence/` | сохранённые выводы всех шагов |
+Docker, Python 3 и стенд из `lecture_01_student`. Команды — из `infra/`.
 
-Большие данные в сдачу не входят: ни исходный датасет, ни Docker volumes.
-
-## Как повторить с чистого стенда
-
-Нужны Docker и Python 3. Команды 2–8 выполняются **из каталога `infra/`** распакованного
-комплекта `lecture_01_student/`. Пути `<путь-к-сдаче>` замените на свой.
+Если Docker Hub не отдаёт `minio/minio`, положите `docker-compose.override.yml` рядом с `docker-compose.yml` — тогда образы возьмутся с quay.io.
 
 ```bash
-# 1. Положить скрипты туда, где их видит контейнер Spark (infra/scripts -> /scripts)
 mkdir -p infra/scripts/hw01
-cp <путь-к-сдаче>/fetch_source.py <путь-к-сдаче>/upload_raw.py <путь-к-сдаче>/pipeline.py infra/scripts/hw01/
+cp fetch_source.py upload_raw.py pipeline.py infra/scripts/hw01/
 
 cd infra
-
-# 2. Поднять стенд
-docker compose build
-docker compose up -d
-docker compose ps --all                                  # minio-init должен быть Exited (0)
+docker compose build && docker compose up -d
 docker compose exec -T trino trino --execute "SELECT 1"
 
-# 3. Скачать открытый источник и собрать табличный CSV (на хосте, ~1 минута, нужен интернет)
 python3 scripts/hw01/fetch_source.py
-#    -> data/hw01/raw_json/<city>.json, data/hw01/source.csv, data/hw01/source_manifest.json
-
-# 4. Положить неизменённый raw в MinIO
 docker compose exec -T spark python3 /scripts/hw01/upload_raw.py
-
-# 5. Основной конвейер: проверки, Parquet с измерениями, Iceberg в две записи
 docker compose exec -T spark spark-submit /scripts/hw01/pipeline.py
-
-# 6. SQL в Trino: проверки, история snapshots, аналитика, федеративный JOIN
-docker compose exec -T trino trino --output-format=ALIGNED < <путь-к-сдаче>/queries.sql
+docker compose exec -T trino trino --output-format=ALIGNED < ../student-babaev-hw01/queries.sql
 ```
 
-Необязательный шаг 7 — перерисовать график (команда выгрузки данных из Trino указана
-в docstring скрипта):
+После прогона в таблице 122 976 строк, среднее температуры `5.642556`. SQL тот же в DataGrip: `jdbc:trino://localhost:8088/lakehouse/babaev`.
 
-```bash
-cp <путь-к-сдаче>/make_chart.py scripts/hw01/
-python3 scripts/hw01/make_chart.py <путь-к-сдаче>/evidence/chart_data.csv <путь-к-сдаче>/chart.svg
-```
+## Что здесь
 
-В DataGrip вместо шага 6 откройте `queries.sql`, назначьте файлу подключение Trino
-(`jdbc:trino://localhost:8088/lakehouse/babaev`, пользователь любой, пароль не нужен)
-и выполняйте блоки по порядку. Выбор клиента на результат не влияет.
+- `pipeline.py` — схема, проверки, parquet, две записи в Iceberg
+- `queries.sql` — проверки, аналитика и JOIN со справочником в `memory`
+- `schema.md` — поля
+- `evidence/` — вывод команд
 
-Остановка без потери данных: `docker compose down` (без `-v`).
-
-## Что должно получиться
-
-| Шаг | Ожидаемый результат |
-|---|---|
-| `fetch_source.py` | 14 городов × 8 784 часа = 122 976 строк, `source.csv` ≈ 13.9 МиБ |
-| `upload_raw.py` | 16 объектов под `s3://raw/babaev/weather/ingestion_date=<дата>/` |
-| `pipeline.py` | raw = accepted + rejected: 122 976 = 122 976 + 0; Parquet 1.68 МиБ против CSV 14.05 МиБ; порции Iceberg 61 152 и 61 824 |
-| `queries.sql` | 2 snapshot (`overwrite` и `append`), сверка со Spark: 122 976 строк и `mean_temperature_c = 5.642556`, федеративный JOIN с 17 568 несопоставленными наблюдениями |
-
-Точные размеры и время зависят от машины; числа строк и агрегаты — нет.
-Даты в `ingestion_date` и `committed_at` у вас будут свои.
-
-Повторный запуск безопасен: `pipeline.py` перезаписывает только свои пути
-`babaev/weather/*` и пересоздаёт свою таблицу, учебные пути `events` из семинара
-он не трогает. В истории snapshots после нескольких прогонов может быть больше двух
-записей — значимы две последние.
+Сам датасет не прилагаю, его качает `fetch_source.py`.
 
 ## Если что-то не запустилось
 
-**`pull access denied for minio/minio`.** Docker Hub на момент выполнения ДЗ не отдаёт
-образы MinIO. Скопируйте `docker-compose.override.yml` из сдачи в `infra/` и повторите
-шаг 2 — Compose подхватит его автоматически и возьмёт те же версии с `quay.io`.
-Исходный `docker-compose.yml` при этом не меняется.
+`pull access denied for minio/minio` — Docker Hub сейчас не отдаёт эти образы. Файл `docker-compose.override.yml` из этой папки положите в `infra/` и снова `docker compose up -d`. Сам `docker-compose.yml` из комплекта не меняйте.
 
-**Trino отвечает не сразу.** Посмотрите `docker compose logs --tail=60 trino` и повторите
-`SELECT 1` после готовности.
+Trino не отвечает сразу после старта — подождите и повторите `SELECT 1`. Логи: `docker compose logs --tail=60 trino`.
 
-**`В s3://raw/babaev/weather/ нет ingestion_date=*`.** Не выполнен шаг 4;
-`pipeline.py` сам находит самый свежий заезд, но нужен хотя бы один.
-Конкретный заезд можно выбрать явно: `spark-submit /scripts/hw01/pipeline.py --ingestion-date 2026-09-23`.
+`В s3://raw/babaev/weather/ нет ingestion_date=*` — не отработал `upload_raw.py`.
 
-**Справочник `memory.default.city_reference` не найден.** Каталог `memory` непостоянный:
-после перезапуска Trino выполните блок 5 из `queries.sql`.
+После перезапуска Trino пропадает справочник в `memory`. Его создаёт блок 5 в `queries.sql`.
 
-## Среда, на которой получены результаты в `evidence/`
+## Среда, на которой получены результаты в evidence/
 
-macOS 26.4, arm64, 36 ГиБ RAM; Docker 29.5.2 в colima с лимитом 6 CPU и 12 ГиБ;
-Spark 3.5.9 в режиме `local[*]` с драйвером 2 ГиБ, Iceberg 1.11.0, Trino 483.
-Порты MinIO, PostgreSQL и Trino привязаны к `127.0.0.1`.
+macOS 26.4, arm64, 36 ГиБ RAM. Docker 29.5.2 в colima, 6 CPU и 12 ГиБ. Spark 3.5.9 `local[*]`, Iceberg 1.11.0, Trino 483. Порты только на `127.0.0.1`.
